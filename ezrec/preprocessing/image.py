@@ -39,7 +39,9 @@ def load_image(image_path):
 
 
 def create_image_record(image_path): 
-    
+    """
+        create a single tf record example with the image and its shape
+    """
     img = tf.io.read_file(image_path)
     img = tf.image.decode_png(img)
     image_shape = img.shape
@@ -49,7 +51,7 @@ def create_image_record(image_path):
 
     feature = {
         "image" : tf.train.Feature(float_list=tf.train.FloatList(value=img)), 
-        "shape" : tf.train.Feature(float_list=tf.train.FloatList(value=image_shape))
+        "shape" : tf.train.Feature(int64_list=tf.train.Int64List(value=image_shape))
     }
 
     feature = tf.train.Features(feature=feature)
@@ -61,6 +63,10 @@ def create_image_record(image_path):
 
 
 def write_tf_records(records_list, file_name): 
+    """
+        Given a list of tf record image example, save all tf records 
+        to a given file
+    """
     print(f"{len(records_list)} files given")
     with tf.io.TFRecordWriter(file_name) as writer:
         for record in records_list: 
@@ -68,3 +74,33 @@ def write_tf_records(records_list, file_name):
 
     print("complete")
     return 
+
+def parse_tf_record_example(train_example):
+    """
+        Parse a single tf.train.Example item
+    """ 
+
+    features = {
+        "image" : tf.io.VarLenFeature(tf.float32),
+        "shape" : tf.io.FixedLenFeature([3], tf.int64)
+    }
+
+    parsed_example = tf.io.parse_single_example(train_example, features)
+    return parsed_example
+
+
+
+def read_records_file(record_file_path): 
+    
+    filenames = [record_file_path] 
+    raw_dataset = tf.data.TFRecordDataset(filenames) 
+    raw_dataset = raw_dataset.map(parse_tf_record_example)
+    print(raw_dataset)
+    for item in raw_dataset.take(1): 
+        print(item)
+    return 
+
+
+#record = create_image_record(image_file)
+#write_tf_records([record], "my_records")
+#read_records_file("my_records")
