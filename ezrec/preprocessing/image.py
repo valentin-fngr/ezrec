@@ -44,6 +44,7 @@ def create_image_record(image_path):
     """
     img = tf.io.read_file(image_path)
     img = tf.image.decode_png(img)
+    img = tf.cast(img, tf.float64) / 255.0
     image_shape = img.shape
     # flatten image to one D array
     img = tf.reshape(img, -1).numpy()
@@ -94,13 +95,12 @@ def read_records_file(record_file_path):
     
     filenames = [record_file_path] 
     raw_dataset = tf.data.TFRecordDataset(filenames) 
-    raw_dataset = raw_dataset.map(parse_tf_record_example)
-    print(raw_dataset)
-    for item in raw_dataset.take(1): 
-        print(item)
-    return 
+    parsed_dataset = raw_dataset.map(parse_tf_record_example)
+    
+    return parsed_dataset
 
 
 #record = create_image_record(image_file)
-#write_tf_records([record], "my_records")
+#records = [record for i in range(200)]
+#write_tf_records(records, "my_records")
 #read_records_file("my_records")
