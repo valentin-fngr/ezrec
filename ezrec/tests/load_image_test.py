@@ -68,7 +68,7 @@ class TestRecordMethods(unittest.TestCase):
             self.assertTrue(np.max(image) <= 1.0)
             
         return 
-
+""
 
 if __name__ == '__main__':
     unittest.main()
