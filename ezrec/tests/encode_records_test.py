@@ -16,4 +16,9 @@ class TestDetectionRecordSerializer(unittest.TestCase):
         self.assertTrue(isinstance(odr_serializer, DetectionRecordSerializer))
 
     def test_raise_error_on_instanciation(self): 
-        pass
+        input_shape = (224,224,3) 
+        label_shape = (7,7,20) 
+        bbox_format = "yxyx"
+        with self.assertRaises(ValueError):
+            DetectionRecordSerializer(input_shape, label_shape, bbox_format) 
+        
