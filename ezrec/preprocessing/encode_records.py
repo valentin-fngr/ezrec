@@ -171,3 +171,17 @@ class DetectionRecordSerializer:
             print()
 
         return 
+
+    def to_record_dataset(self, directory): 
+        """ 
+            Read .tfrecords file in a given directory and return tf.data.TFRecordDataset
+        """ 
+
+        if not os.path.exists(directory): 
+            raise ValueError("Unable to find directory", directory) 
+        
+        if len(os.listdir(directory)):
+            tfrecord_filenames = [os.path.join(directory, filename) for filename in os.listdir(directory)]
+            raw_dataset = tf.data.TFRecordDataset(tfrecord_filenames) 
+
+            return raw_dataset
