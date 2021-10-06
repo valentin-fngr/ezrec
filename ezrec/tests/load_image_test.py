@@ -64,11 +64,9 @@ class TestRecordMethods(unittest.TestCase):
             
             image = tf.sparse.to_dense(image)
             image = np.reshape(image.numpy(), shape)
-
             self.assertTrue(np.max(image) <= 1.0)
             
         return 
-""
 
 if __name__ == '__main__':
     unittest.main()

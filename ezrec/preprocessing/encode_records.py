@@ -131,3 +131,43 @@ class DetectionRecordSerializer:
 
         return example.SerializeToString()
 
+
+    def create_records(image_paths, bboxs, tfrecords_dir, num_sample=300, file_prefix=None): 
+        """
+            given a list of image_paths and a list of corresponding bboxs, 
+            parse all examples into seralized string and save them as tfrecords
+            
+            Arguments: 
+                image_paths : a list of image_paths 
+                bboxs : a list of bboxs
+                tfrecords_path : the path where the tfrecords file will be saved
+                num_samples : the number for sample per files 
+                file_prefix : if None doesn't set a file prefix. Otherwise, save the .tfrecords file as <prefix>_<number>.tfrecords
+
+        """
+
+        # TODO : divide into multiple tf records if too big
+
+        if len(image_paths) != len(bboxs): 
+            raise ValueError("Image_paths list and bboxs list should have the same length !")
+
+        num_tfrecords = len(image_paths) // num_sample
+        if len(image_paths) % num_samples != 0: 
+            num_tfrecords += 1
+        
+        if not os.path.exists(tfrecords_dir): 
+            os.makedir(tfrecords_dir)
+
+        for i in range(num_tfrecords): 
+            sample_path = image_paths[i*num_samples:(i+1)*num_samples]
+            sample_bboxs = bboxs[i*num_samples:(i+1)*num_samples]
+
+            with tf.python_io.TFRecordWriter(f'file_{i}_{len(sample_path)}.tfrecords') as writer:
+                
+                for i in range(len(sample_path)): 
+                    serialized_example = self._create_example(sample_path[i], sample_bboxs[i]) 
+                    writer.write(serialized_example)
+            print(f"Successfuly created tf record file file_{i}_{len(sample_path)}.tfrecords")
+            print()
+            
+        return 
