@@ -167,8 +167,8 @@ class DetectionRecordSerializer:
                 for i in range(len(sample_path)): 
                     serialized_example = self._create_example(sample_path[i], sample_bboxs[i]) 
                     writer.write(serialized_example)
-            print(f"Successfuly created tf record file file_{i}_{len(sample_path)}.tfrecords")
-            print()
+                print(f"Successfuly created tf record file file_{i}_{len(sample_path)}.tfrecords")
+                print()
 
         return 
 
@@ -176,7 +176,6 @@ class DetectionRecordSerializer:
         """ 
             Read .tfrecords file in a given directory and return tf.data.TFRecordDataset
         """ 
-
         if not os.path.exists(directory): 
             raise ValueError("Unable to find directory", directory) 
         
