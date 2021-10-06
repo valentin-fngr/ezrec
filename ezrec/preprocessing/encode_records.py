@@ -21,7 +21,7 @@ class DetectionRecordSerializer:
         """
             input_shape : the image input tensor shape 
             label_shape : the label tensor shape 
-            bbox_format : the format of the bbox. Can be xxyy or xywh
+            bbox_format : the format of the bbox. Can be xxyy, xyxy or xywh. You can find the informations in the label file of your dataset.
             norm_coord : boolean telling if the bbox coordinates are normalized 
 
         """ 
