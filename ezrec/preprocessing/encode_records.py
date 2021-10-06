@@ -113,15 +113,15 @@ class DetectionRecordSerializer:
                 heights.append(box[self.bbox_format_name[3]])
 
             feature = {
-                "image/initial_height" : tf.train.Feature(int64_list=tf.train.Int64List(value=init_height)), 
-                "image/initial_width" : tf.train.Feature(int64_list=tf.train.Int64List(value=init_height)),
-                "image/height" :  tf.train.Feature(int64_list=tf.train.Int64List(value=height)),
-                "image/width" : tf.train.Feature(int64_list=tf.train.Int64List(value=width)),
-                "image/encoded" : tf.train.Feature(int64_list=tf.train.Int64List(value=img)),
-                "image/obj/center_xs": tf.train.Feature(int64_list=tf.train.Int64List(value=xmins)), 
-                "image/obj/center_ys": tf.train.Feature(int64_list=tf.train.Int64List(value=ymins)),
-                "image/obj/widths": tf.train.Feature(int64_list=tf.train.Int64List(value=xmaxs)),
-                "image/obj/heights": tf.train.Feature(int64_list=tf.train.Int64List(value=ymaxs)), 
+                "image/initial_height" : tf.train.Feature(int64_list=tf.train.Int64List(value=[init_height])), 
+                "image/initial_width" : tf.train.Feature(int64_list=tf.train.Int64List(value=[init_height])),
+                "image/height" :  tf.train.Feature(int64_list=tf.train.Int64List(value=[height])),
+                "image/width" : tf.train.Feature(int64_list=tf.train.Int64List(value=[width])),
+                "image/encoded" : tf.train.Feature(float_list=tf.train.FloatList(value=img)),
+                "image/obj/center_xs": tf.train.Feature(int64_list=tf.train.Int64List(value=center_xs)), 
+                "image/obj/center_ys": tf.train.Feature(int64_list=tf.train.Int64List(value=center_ys)),
+                "image/obj/widths": tf.train.Feature(int64_list=tf.train.Int64List(value=widths)),
+                "image/obj/heights": tf.train.Feature(int64_list=tf.train.Int64List(value=heights)), 
                 "image/obj/class_ids": tf.train.Feature(int64_list=tf.train.Int64List(value=label_ids)), 
             }
         

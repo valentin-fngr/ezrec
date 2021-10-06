@@ -49,5 +49,23 @@ class TestDetectionRecordSerializer(unittest.TestCase):
         bbox_format = "xyxy"
         odr_serializer = DetectionRecordSerializer(input_shape, label_shape, bbox_format) 
         example = odr_serializer._create_example(image_path, bbox_xyxy)
-        print(example)
-        self.assertTrue(isinstance(example, tf.train.Example))
+        print(f"size of parsed example : {sys.getsizeof(example)}")
+        self.assertTrue(isinstance(example, bytes))
+
+    def test_create_example_xxyy(self): 
+        input_shape = (224,224,3) 
+        bbox_format = "xxyy"
+        label_shape = (7,7,20) 
+        odr_serializer = DetectionRecordSerializer(input_shape, label_shape, bbox_format) 
+        example = odr_serializer._create_example(image_path, bbox_xyxy)
+        print(f"size of parsed example : {sys.getsizeof(example)}")
+        self.assertTrue(isinstance(example, bytes))
+
+    def test_create_example_xywh(self): 
+        input_shape = (224,224,3) 
+        bbox_format = "xywh"
+        label_shape = (7,7,20) 
+        odr_serializer = DetectionRecordSerializer(input_shape, label_shape, bbox_format) 
+        example = odr_serializer._create_example(image_path, bbox_xyxy)
+        print(f"size of parsed example : {sys.getsizeof(example)}")
+        self.assertTrue(isinstance(example, bytes))
