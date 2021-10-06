@@ -8,6 +8,7 @@ import tensorflow as tf
 
 image_folder = os.path.join("/home/valentin/Desktop/deep_learning/ezrec/ezrec/images")
 image_path = os.path.join(image_folder,"0a1fe8530f26.jpg")
+tfrecords_dir = os.path.join(os.getcwd(), "test_records_dir") 
 
 bbox_xyxy = [
     {
@@ -69,3 +70,20 @@ class TestDetectionRecordSerializer(unittest.TestCase):
         example = odr_serializer._create_example(image_path, bbox_xyxy)
         print(f"size of parsed example : {sys.getsizeof(example)}")
         self.assertTrue(isinstance(example, bytes))
+
+
+    def test_save_records(self): 
+        input_shape = (224,224,3) 
+        bbox_format = "xywh"
+        label_shape = (7,7,20) 
+        odr_serializer = DetectionRecordSerializer(input_shape, label_shape, bbox_format) 
+        image_paths = [image_path for i in range(1000)] 
+        bboxs = [bbox_xyxy for i in range(1000)]
+        odr_serializer.create_records(image_paths, bboxs, tfrecords_dir,file_prefix="tests") 
+
+        self.assertTrue(len(os.listdir(tfrecords_dir)) == 4)
+        
+        # delete files then delete folder 
+        for file_path in os.listdir(tfrecords_dir): 
+            os.remove(os.path.join(tfrecords_dir,file_path))
+        os.rmdir(tfrecords_dir)
