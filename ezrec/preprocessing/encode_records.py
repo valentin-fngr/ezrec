@@ -31,13 +31,15 @@ class DetectionRecordSerializer:
         if len(bbox_format_name) != 5:
             # TODO : test raise  
             raise ValueError("Please, enter 5 keys to retrieve coordinates + object label")
+        else: 
+            self.bbox_format_name = bbox_format_name
         if bbox_format in ["xyxy", "xxyy", "xywh"]: 
             self.bbox_format = bbox_format
         else: 
             raise ValueError(f"bbox format should be either xyxy or xywh, received {bbox_format}")
 
 
-    def _create_example(image_path, bbox): 
+    def _create_example(self,image_path, bbox): 
         """
             given an image_path and a label, read the image, reshape it if needed, 
             encode it and encode its associated label
@@ -49,8 +51,8 @@ class DetectionRecordSerializer:
         img = tf.cast(img, tf.float64) / 255.0
 
         init_height , init_width = img.shape[:2]
-        if input_shape and input_shape[:2] != (init_height, init_width):
-
+        if self.input_shape and self.input_shape[:2] != (init_height, init_width):
+            
             height, width = self.input_shape[:2]
             img = tf.image.resize(img, (height, width)) 
    
@@ -89,11 +91,11 @@ class DetectionRecordSerializer:
             
             # creat record
             feature = {
-                "image/initial_height" : tf.train.Feature(int64_list=tf.train.Int64List(value=init_height)), 
-                "image/initial_width" : tf.train.Feature(int64_list=tf.train.Int64List(value=init_height)),
-                "image/height" :  tf.train.Feature(int64_list=tf.train.Int64List(value=height)),
-                "image/width" : tf.train.Feature(int64_list=tf.train.Int64List(value=width)),
-                "image/encoded" : tf.train.Feature(int64_list=tf.train.Int64List(value=img)),
+                "image/initial_height" : tf.train.Feature(int64_list=tf.train.Int64List(value=[init_height])), 
+                "image/initial_width" : tf.train.Feature(int64_list=tf.train.Int64List(value=[init_height])),
+                "image/height" :  tf.train.Feature(int64_list=tf.train.Int64List(value=[height])),
+                "image/width" : tf.train.Feature(int64_list=tf.train.Int64List(value=[width])),
+                "image/encoded" : tf.train.Feature(float_list=tf.train.FloatList(value=img)),
                 "image/obj/xmins": tf.train.Feature(int64_list=tf.train.Int64List(value=xmins)), 
                 "image/obj/ymins": tf.train.Feature(int64_list=tf.train.Int64List(value=ymins)),
                 "image/obj/xmaxs": tf.train.Feature(int64_list=tf.train.Int64List(value=xmaxs)),
