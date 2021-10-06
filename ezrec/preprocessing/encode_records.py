@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import PIL
 import os
-
+import sys
 
 
 # todo : 
@@ -49,7 +49,6 @@ class DetectionRecordSerializer:
         img = tf.image.decode_png(img)
         # normalize the image 
         img = tf.cast(img, tf.float64) / 255.0
-
         init_height , init_width = img.shape[:2]
         if self.input_shape and self.input_shape[:2] != (init_height, init_width):
             
@@ -58,7 +57,8 @@ class DetectionRecordSerializer:
    
 
         # flatten image to one dimensional array
-        img = tf.reshape(img, -1).numpy()
+        #img = tf.reshape(img, -1).numpy()
+        img = tf.io.encode_jpeg(tf.cast(img, dtype="uint8")).numpy()
 
 
         label_ids = []
@@ -95,7 +95,7 @@ class DetectionRecordSerializer:
                 "image/initial_width" : tf.train.Feature(int64_list=tf.train.Int64List(value=[init_height])),
                 "image/height" :  tf.train.Feature(int64_list=tf.train.Int64List(value=[height])),
                 "image/width" : tf.train.Feature(int64_list=tf.train.Int64List(value=[width])),
-                "image/encoded" : tf.train.Feature(float_list=tf.train.FloatList(value=img)),
+                "image/encoded" : tf.train.Feature(bytes_list=tf.train.BytesList(value=[img])),
                 "image/obj/xmins": tf.train.Feature(int64_list=tf.train.Int64List(value=xmins)), 
                 "image/obj/ymins": tf.train.Feature(int64_list=tf.train.Int64List(value=ymins)),
                 "image/obj/xmaxs": tf.train.Feature(int64_list=tf.train.Int64List(value=xmaxs)),
@@ -117,7 +117,7 @@ class DetectionRecordSerializer:
                 "image/initial_width" : tf.train.Feature(int64_list=tf.train.Int64List(value=[init_height])),
                 "image/height" :  tf.train.Feature(int64_list=tf.train.Int64List(value=[height])),
                 "image/width" : tf.train.Feature(int64_list=tf.train.Int64List(value=[width])),
-                "image/encoded" : tf.train.Feature(float_list=tf.train.FloatList(value=img)),
+                "image/encoded" : tf.train.Feature(bytes_list=tf.train.BytesList(value=[img])),
                 "image/obj/center_xs": tf.train.Feature(int64_list=tf.train.Int64List(value=center_xs)), 
                 "image/obj/center_ys": tf.train.Feature(int64_list=tf.train.Int64List(value=center_ys)),
                 "image/obj/widths": tf.train.Feature(int64_list=tf.train.Int64List(value=widths)),
