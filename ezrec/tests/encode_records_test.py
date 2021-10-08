@@ -124,7 +124,11 @@ class TestDetectionRecordSerializer(unittest.TestCase):
         parsed_dataset = odr_serializer.parse_dataset(raw_dataset)
 
         for sample in parsed_dataset.take(1): 
-            print(sample["image/encoded"])
+            img = sample["image/encoded"]
+            print(img)
+            print("IMAGE :", image)
+            print(image.numpy())
+            
 
         for file_path in os.listdir(tfrecords_dir): 
             os.remove(os.path.join(tfrecords_dir,file_path))
