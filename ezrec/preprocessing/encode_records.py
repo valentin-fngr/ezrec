@@ -204,28 +204,29 @@ class DetectionRecordSerializer:
                     "image/initial_width" : tf.io.FixedLenFeature([], tf.int64),
                     "image/height" :  tf.io.FixedLenFeature([], tf.int64),
                     "image/width" : tf.io.FixedLenFeature([], tf.int64),
-                    "image/encoded" : tf.io.FixedLenFeature([], tf.string),
-                    "image/obj/xmins": tf.io.VarLenFeature([], tf.int64), 
-                    "image/obj/ymins": tf.io.VarLenFeature([], tf.int64),
-                    "image/obj/xmaxs": tf.io.VarLenFeature([], tf.int64),
-                    "image/obj/ymaxs": tf.io.VarLenFeature([], tf.int64), 
-                    "image/obj/class_ids": tf.io.VarLenFeature([], tf.int64), 
+                    "image/encoded" : tf.io.VarLenFeature(tf.string),
+                    "image/obj/xmins": tf.io.VarLenFeature(tf.int64), 
+                    "image/obj/ymins": tf.io.VarLenFeature(tf.int64),
+                    "image/obj/xmaxs": tf.io.VarLenFeature(tf.int64),
+                    "image/obj/ymaxs": tf.io.VarLenFeature(tf.int64), 
+                    "image/obj/class_ids": tf.io.VarLenFeature(tf.int64), 
                 }
 
                             
             elif self.bbox_format == "xywh": 
+                print("READING FOR XYWH !")
                 
                 feature_description = {
                     "image/initial_height" : tf.io.FixedLenFeature([], tf.int64), 
                     "image/initial_width" : tf.io.FixedLenFeature([], tf.int64),
                     "image/height" :  tf.io.FixedLenFeature([], tf.int64),
                     "image/width" : tf.io.FixedLenFeature([], tf.int64),
-                    "image/encoded" : tf.io.FixedLenFeature([], tf.string),
-                    "image/obj/center_xs": tf.io.VarLenFeature([], tf.int64), 
-                    "image/obj/center_ys": tf.io.VarLenFeature([], tf.int64),
-                    "image/obj/widths": tf.io.VarLenFeature([], tf.int64),
-                    "image/obj/heights": tf.io.VarLenFeature([], tf.int64), 
-                    "image/obj/class_ids": tf.io.VarLenFeature([], tf.int64), 
+                    "image/encoded" : tf.io.VarLenFeature(tf.string),
+                    "image/obj/center_xs": tf.io.VarLenFeature(tf.int64), 
+                    "image/obj/center_ys": tf.io.VarLenFeature(tf.int64),
+                    "image/obj/widths": tf.io.VarLenFeature(tf.int64),
+                    "image/obj/heights": tf.io.VarLenFeature(tf.int64), 
+                    "image/obj/class_ids": tf.io.VarLenFeature(tf.int64), 
                 }
 
             return tf.io.parse_single_example(example_proto, feature_description)

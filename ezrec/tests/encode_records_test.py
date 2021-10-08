@@ -112,7 +112,7 @@ class TestDetectionRecordSerializer(unittest.TestCase):
 
     def test_parse_dataset(self): 
         input_shape = (224,224,3) 
-        bbox_format = "xywh"
+        bbox_format = "xyxy"
         label_shape = (7,7,20) 
         odr_serializer = DetectionRecordSerializer(input_shape, label_shape, bbox_format) 
         image_paths = [image_path for i in range(300)] 
@@ -122,11 +122,9 @@ class TestDetectionRecordSerializer(unittest.TestCase):
         raw_dataset = odr_serializer.to_record_dataset(tfrecords_dir) 
         
         parsed_dataset = odr_serializer.parse_dataset(raw_dataset)
+
         for sample in parsed_dataset.take(1): 
-            print(sample)
-
-
-
+            print(sample["image/encoded"])
 
         for file_path in os.listdir(tfrecords_dir): 
             os.remove(os.path.join(tfrecords_dir,file_path))
