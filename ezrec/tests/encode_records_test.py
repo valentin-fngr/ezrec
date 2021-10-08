@@ -5,6 +5,7 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../../ezrec")
 from preprocessing.encode_records import DetectionRecordSerializer
 import tensorflow as tf
 import numpy as np 
+import matplotlib.pyplot as plt
 
 image_folder = os.path.join("/home/valentin/Desktop/deep_learning/ezrec/ezrec/images")
 image_path = os.path.join(image_folder,"0a1fe8530f26.jpg")
@@ -52,7 +53,7 @@ class TestDetectionRecordSerializer(unittest.TestCase):
     #     example = odr_serializer._create_example(image_path, bbox_xyxy)
     #     print(f"size of parsed example : {sys.getsizeof(example)}")
     #     self.assertTrue(isinstance(example, bytes))
-
+        
     # def test_create_example_xxyy(self): 
     #     input_shape = (224,224,3) 
     #     bbox_format = "xxyy"
@@ -115,8 +116,8 @@ class TestDetectionRecordSerializer(unittest.TestCase):
         bbox_format = "xyxy"
         label_shape = (7,7,20) 
         odr_serializer = DetectionRecordSerializer(input_shape, label_shape, bbox_format) 
-        image_paths = [image_path for i in range(300)] 
-        bboxs = [bbox_xyxy for i in range(300)]
+        image_paths = [image_path for i in range(100)] 
+        bboxs = [bbox_xyxy for i in range(100)]
         odr_serializer.create_records(image_paths, bboxs, tfrecords_dir)
 
         raw_dataset = odr_serializer.to_record_dataset(tfrecords_dir) 
@@ -124,11 +125,11 @@ class TestDetectionRecordSerializer(unittest.TestCase):
         parsed_dataset = odr_serializer.parse_dataset(raw_dataset)
 
         for sample in parsed_dataset.take(1): 
+            print(sample)
             img = sample["image/encoded"]
-            print(img)
-            print("IMAGE :", image)
-            print(image.numpy())
-            
+            img_array =  tf.io.decode_jpeg(img)
+            img_array = tf.reshape(img_array, (sample["image/height"], sample["image/width"]))
+            plt.imshow(img_array)
 
         for file_path in os.listdir(tfrecords_dir): 
             os.remove(os.path.join(tfrecords_dir,file_path))
