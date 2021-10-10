@@ -47,19 +47,18 @@ class DetectionRecordSerializer:
 
         img = tf.io.read_file(image_path)
         img = tf.image.decode_png(img)
-        # normalize the image 
-        img = tf.cast(img, tf.float64) / 255.0
         init_height , init_width = img.shape[:2]
         if self.input_shape and self.input_shape[:2] != (init_height, init_width):
             
             height, width = self.input_shape[:2]
             img = tf.image.resize(img, (height, width)) 
-   
 
         # flatten image to one dimensional array
         #img = tf.reshape(img, -1).numpy()
-        img = tf.io.encode_jpeg(tf.cast(img, dtype="uint8")).numpy()
-
+        img = tf.cast(img, dtype=tf.uint8)
+        encoded_image = tf.io.encode_jpeg(img).numpy()
+        # decode back for testing 
+        
 
         label_ids = []
 
@@ -95,7 +94,7 @@ class DetectionRecordSerializer:
                 "image/initial_width" : tf.train.Feature(int64_list=tf.train.Int64List(value=[init_height])),
                 "image/height" :  tf.train.Feature(int64_list=tf.train.Int64List(value=[height])),
                 "image/width" : tf.train.Feature(int64_list=tf.train.Int64List(value=[width])),
-                "image/encoded" : tf.train.Feature(bytes_list=tf.train.BytesList(value=[img])),
+                "image/encoded" : tf.train.Feature(bytes_list=tf.train.BytesList(value=[encoded_image])),
                 "image/obj/xmins": tf.train.Feature(int64_list=tf.train.Int64List(value=xmins)), 
                 "image/obj/ymins": tf.train.Feature(int64_list=tf.train.Int64List(value=ymins)),
                 "image/obj/xmaxs": tf.train.Feature(int64_list=tf.train.Int64List(value=xmaxs)),
@@ -117,7 +116,7 @@ class DetectionRecordSerializer:
                 "image/initial_width" : tf.train.Feature(int64_list=tf.train.Int64List(value=[init_height])),
                 "image/height" :  tf.train.Feature(int64_list=tf.train.Int64List(value=[height])),
                 "image/width" : tf.train.Feature(int64_list=tf.train.Int64List(value=[width])),
-                "image/encoded" : tf.train.Feature(bytes_list=tf.train.BytesList(value=[img])),
+                "image/encoded" : tf.train.Feature(bytes_list=tf.train.BytesList(value=[encoded_image])),
                 "image/obj/center_xs": tf.train.Feature(int64_list=tf.train.Int64List(value=center_xs)), 
                 "image/obj/center_ys": tf.train.Feature(int64_list=tf.train.Int64List(value=center_ys)),
                 "image/obj/widths": tf.train.Feature(int64_list=tf.train.Int64List(value=widths)),
@@ -128,7 +127,6 @@ class DetectionRecordSerializer:
         features = tf.train.Features(feature=feature)
 
         example = tf.train.Example(features=features)
-
         return example.SerializeToString()
 
 
@@ -162,11 +160,12 @@ class DetectionRecordSerializer:
             sample_path = image_paths[i*num_sample:(i+1)*num_sample]
             sample_bboxs = bboxs[i*num_sample:(i+1)*num_sample]
 
-            with tf.io.TFRecordWriter(f'{tfrecords_dir}/file_{i}_{len(sample_path)}.tfrecords') as writer:
+            with tf.io.TFRecordWriter(f'{tfrecords_dir}/file_{i}_{len(sample_path)}.tfrecord') as writer:
                 
                 for i in range(len(sample_path)): 
                     serialized_example = self._create_example(sample_path[i], sample_bboxs[i]) 
                     writer.write(serialized_example)
+                    
                 print(f"Successfuly created tf record file file_{i}_{len(sample_path)}.tfrecords")
                 print()
 

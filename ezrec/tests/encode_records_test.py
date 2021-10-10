@@ -116,20 +116,18 @@ class TestDetectionRecordSerializer(unittest.TestCase):
         bbox_format = "xyxy"
         label_shape = (7,7,20) 
         odr_serializer = DetectionRecordSerializer(input_shape, label_shape, bbox_format) 
-        image_paths = [image_path for i in range(100)] 
-        bboxs = [bbox_xyxy for i in range(100)]
+        image_paths = [image_path for i in range(300)] 
+        bboxs = [bbox_xyxy for i in range(300)]
         odr_serializer.create_records(image_paths, bboxs, tfrecords_dir)
 
         raw_dataset = odr_serializer.to_record_dataset(tfrecords_dir) 
         
         parsed_dataset = odr_serializer.parse_dataset(raw_dataset)
 
-        for sample in parsed_dataset.take(1): 
-            print(sample)
+        for sample in parsed_dataset.take(300): 
             img = sample["image/encoded"]
-            img_array =  tf.io.decode_jpeg(img)
-            img_array = tf.reshape(img_array, (sample["image/height"], sample["image/width"]))
-            plt.imshow(img_array)
+            img_array =  tf.image.decode_image(img)
+            self.assertTrue(len(np.unique(img_array)) > 1)
 
         for file_path in os.listdir(tfrecords_dir): 
             os.remove(os.path.join(tfrecords_dir,file_path))
