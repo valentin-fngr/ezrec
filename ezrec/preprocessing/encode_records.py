@@ -17,7 +17,7 @@ class DetectionRecordSerializer:
     """
         DetectionRecordSerializer is responsible for creating tf records and saving them. 
     """
-    def __init__(self, input_shape=None, label_shape=None, bbox_format="xyxy", bbox_format_name=["x1", "x2", "y1", "y2", "id"]):
+    def __init__(self, input_shape=None, label_shape=None, bbox_format="xyxy", bbox_format_name=["x1", "x2", "y1", "y2", "id"], norm_coord=False):
         """
             input_shape : the image input tensor shape 
             label_shape : the label tensor shape 
@@ -26,6 +26,7 @@ class DetectionRecordSerializer:
 
         """ 
         # test init method
+        
         self.input_shape = input_shape 
         self.label_shape = label_shape 
         if len(bbox_format_name) != 5:
@@ -38,6 +39,9 @@ class DetectionRecordSerializer:
         else: 
             raise ValueError(f"bbox format should be either xyxy or xywh, received {bbox_format}")
 
+        if not isinstance(norm_coord, bool): 
+            raise ValueError("norm_cord attribute should be a boolean")
+        self.norm_coord = norm_coord
 
     def _create_example(self,image_path, bbox): 
         """
